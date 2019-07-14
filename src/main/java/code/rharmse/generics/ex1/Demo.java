@@ -1,26 +1,24 @@
 package code.rharmse.generics.ex1;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Demo {
 
     final EvenProperty property = new EvenProperty("Even numbers");
 
     public static void main(String...args) {
-        char[] digits = new Integer(1213121).toString().toCharArray();
+        Random rand = new Random(System.currentTimeMillis());
+        List<Integer> data = new ArrayList<>(1000);
 
-        boolean isPalindrome = true;
-        int midPoint = digits.length % 2 == 0 ? digits.length/2 : (digits.length-1)/2;
-
-        for (int i = 1; i <= midPoint && isPalindrome;  i++) {
-            if (digits[i-1] != digits[digits.length - i]) {
-                isPalindrome = false;
-            }
+        for (int i = 0; i < 10000; i++) {
+            data.add(rand.nextInt(10000));
         }
-        System.out.println("Is Pallindrome: " + isPalindrome);
+
+        NaturalNumbers numbers = new NaturalNumbers();
+        numbers.process(data);
     }
 }
 
@@ -65,8 +63,8 @@ class OddProperty extends EvenProperty {
     }
 }
 
-class PalindromProperty extends Property<Integer> {
-    public PalindromProperty(String property) {
+class PalindromeProperty extends Property<Integer> {
+    public PalindromeProperty(String property) {
         super(property);
     }
 
@@ -81,6 +79,7 @@ class PalindromProperty extends Property<Integer> {
                 isPalindrome = false;
             }
         }
+        isPalindrome &= digits.length > 2;
         return isPalindrome;
     }
 }
@@ -112,13 +111,41 @@ abstract class PropertyCounter<T> {
     }
 }
 
+class EvenNumberCounter extends PropertyCounter<Integer> {
+
+    public EvenNumberCounter(Property<Integer> prop) {
+        super(prop);
+    }
+}
+
+class OddNumberCounter extends PropertyCounter<Integer> {
+
+    public OddNumberCounter(Property<Integer> prop) {
+        super(prop);
+    }
+}
+
+class PalindromeCounter extends PropertyCounter<Integer> {
+
+    public PalindromeCounter(Property<Integer> prop) {
+        super(prop);
+    }
+}
+
 class NaturalNumbers {
-    private List<Property<Integer>> properties;
+    private List<PropertyCounter<Integer>> counters;
+    
     public NaturalNumbers() {
-        properties = new ArrayList<>();
-        properties.add(new EvenProperty("Even Number"));
-        properties.add(new OddProperty("Odd Number"));
+        counters = new ArrayList<>();
+        counters.add(new EvenNumberCounter(new EvenProperty("Even Number")));
+        counters.add(new OddNumberCounter(new OddProperty("Odd Number")));
+        counters.add(new PalindromeCounter(new PalindromeProperty("Pallindrome")));
+    }
 
-
+    public void process(Collection<Integer> data) {
+        for (PropertyCounter<Integer> counter : counters) {
+            counter.count(data);
+            System.out.println(counter);
+        }
     }
 }
