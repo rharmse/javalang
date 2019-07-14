@@ -20,6 +20,16 @@ class Lists {
         return list;
     }
 
+    public void addToList(List<? super Number> list, Number value) {
+        assert list != null && value != null;
+        list.add(value);
+    }
+
+    public Number getFromList(List<? extends Number> list, Number index) {
+        assert list != null && index != null;
+        return list.get(index.intValue());
+    }
+
     public static void main(String...args) {
         List<Integer> ints = Lists.toList();
         List<Object> objs = Lists.<Object>toList(1, "two");
